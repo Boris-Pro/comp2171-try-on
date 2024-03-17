@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h2>Registration Form</h2>
+    <hr>
+    <form method="post" action="{{ url_for('register') }}" novalidate>
+        {{ form.csrf_token }}
+        <div class="form-group mb-3">
+            {{ form.first_name.label(class="form-label") }}<span class="text-danger">(Required)</span> {{ form.first_name(class="form-control", style="width: 300px") }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.last_name.label(class="form-label") }}<span class="text-danger">(Required)</span> {{ form.last_name(class="form-control", style="width: 300px") }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.user_name.label(class="form-label") }}<span class="text-danger">(Required)</span>{{ form.user_name(class="form-control", style="width: 300px") }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.email.label(class="form-label") }}<span class="text-danger">(Required)</span> {{ form.email(class="form-control", style="width: 300px", placeholder="jdoe@example.com") }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.password.label(class="form-label") }}<span class="text-danger">(Required)</span> {{ form.password(class="form-control", style="width: 300px") }}
+        </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+</form>
+{% endblock %}
