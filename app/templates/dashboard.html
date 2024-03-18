@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h1>Welcome to Your Dashboard</h1>
+<h2>Your Products:</h2>
+<ul>
+    {% for product in products %}
+        <li>{{ product.name }} - ${{ product.price }}</li>
+    {% endfor %}
+</ul>
+<a href="{{ url_for('add_product') }}">Add Product</a>
+{% endblock %}

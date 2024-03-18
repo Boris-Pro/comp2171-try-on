@@ -23,16 +23,25 @@
             {% endif %}
           </span>
         </li>
-        {% if not current_user.is_authenticated %}
+        {% if current_user.is_authenticated %}
+          {% if current_user.user_type == 'seller' %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+            </li>
+          {% elif current_user.user_type == 'buyer' %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('about') }}">Cart</a>
+            </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+          </li>
+        {% else %}
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('register') }}">Register</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('login') }}">Login</a>
-          </li>
-        {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
           </li>
         {% endif %}
       </ul>

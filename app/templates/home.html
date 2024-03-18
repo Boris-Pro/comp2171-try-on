@@ -2,7 +2,24 @@
 
 {% block main %}
 <h1 class="page-header">Try On</h1>
-<!-- {% include 'flash_messages.html' %} -->
+<div class="container mt-5">
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
+                <!-- <img src="{{ product.image_filename }}" class="card-img-top" alt="Product Image"> -->
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.description }}</p>
+                    <p class="card-text">Price: ${{ product.price }}</p>
+                    <a href="#" class="btn btn-primary">Add to Cart</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 
 <p class="lead">This Flask app demonstrates basic authentication.</p>
 {% endblock %}
