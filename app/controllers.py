@@ -4,7 +4,7 @@ from flask import render_template, request, redirect, url_for, flash, session, a
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from app.models import UserProfile
-from app.models import Product, CartItem, Review
+from app.models import Product, Cart, Review
 from app.forms import LoginForm
 from app.forms import RegisterForm, ReviewForm
 from werkzeug.security import check_password_hash

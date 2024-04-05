@@ -17,8 +17,12 @@
                         <!-- <p class="card-text">{{ product.description }}</p> -->
                         <p class="card-text">Price: ${{ product.price }}</p>
                         <p class="card-text">Quantity: {{ product.quantity }}</p>
-                        <a href="{{ url_for('edit_product', product_id=product.id) }}" class="btn btn-primary">Edit Product</a>
-                        <a href="{{ url_for('delete_product', product_id=product.id)}}" class="btn btn-primary">Remove Product</a>
+                        <hr>
+                        <a href="{{ url_for('view_product_d', product_id=product.id) }}" class="btn btn-primary">View</a>
+                        <a href="{{ url_for('edit_product', product_id=product.id) }}" class="btn btn-primary">Edit</a>
+                        <hr>
+                        <a href="{{ url_for('delete_product', product_id=product.id)}}" class="btn btn-danger">Remove</a>
+                        
                     </div>
                 </div>
             </div>

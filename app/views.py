@@ -4,7 +4,7 @@ from flask import render_template, request, redirect, url_for, flash, session, a
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from app.models import UserProfile
-from app.models import Product, CartItem, Review
+from app.models import Product, Cart, Review
 from app.forms import LoginForm
 from app.forms import RegisterForm, ReviewForm
 from werkzeug.security import check_password_hash
@@ -59,19 +59,6 @@ def register():
             return redirect(url_for('home'))
         flash_errors(myform)
     return render_template('register.html', form=myform)
-
-# @app.route('/dashboard')
-# @login_required
-# def dashboard():
-#     if current_user.user_type == 'seller':
-#         products = Product.query.filter_by(seller_id=current_user.id).all()
-#         # products = Product.query.all()  # Fetch all products from the database
-#         for prod in products:
-#             prod.image_url = url_for('send_image', filename=prod.image_filename)
-#             return render_template('dashboard.html', products=products)
-#     else:
-#         flash('Access denied! You are not authorized to view this page.', 'danger')
-#         return redirect(url_for('home'))
     
 
 @app.route('/dashboard')
@@ -89,52 +76,7 @@ def dashboard():
         flash('Access denied! You are not authorized to view this page.', 'danger')
         return redirect(url_for('home'))
 
-# @app.route('/product/add', methods=['GET', 'POST'])
-# @login_required
-# def add_product():
-#     if current_user.user_type == 'seller':
-#         form = ProductForm()
-#         if form.validate_on_submit():
-#             product = Product(
-#                 name=form.name.data,
-#                 price=form.price.data,
-#                 description=form.description.data,
-#                 quantity=form.quantity.data,
-#                 category=form.category.data,
-#                 weight=form.weight.data,
-#                 image_filename=form.image_filename.data,
-#                 seller=current_user
-#             )
-#             db.session.add(product)
-#             db.session.commit()
-#             flash('Product added successfully!', 'success')
-#             return redirect(url_for('dashboard'))
-#         return render_template('add_product.html', form=form)
-#     else:
-#         flash('Access denied! You are not authorized to add products.', 'danger')
-#         return redirect(url_for('dashboard'))
 
-# app.route('/dashboard/edit_product/<int:product_id>', methods=['GET', 'POST'])
-# @login_required
-# def edit_product(product_id):
-#     product = Product.query.get_or_404(product_id)
-#     if current_user.user_type == 'seller' and product.seller_id == current_user.id:
-#         form = ProductForm(obj=product)
-#         if form.validate_on_submit():
-#             product.name = form.name.data
-#             product.price = form.price.data
-#             product.description = form.description.data
-#             product.quantity = form.quantity.data
-#             product.category = form.category.data
-#             product.weight = form.weight.data
-#             product.image_filename = form.image_filename.data
-#             db.session.commit()
-#             flash('Product updated successfully!', 'success')
-#             return redirect(url_for('dashboard'))
-#         return render_template('edit_product.html', form=form, product=product)
-#     else:
-#         flash('Access denied! You are not authorized to edit this product.', 'danger')
-#         return redirect(url_for('dashboard'))
     
 @app.route('/dashboard/edit_product/<int:product_id>', methods=['GET', 'POST'])
 @login_required
@@ -244,38 +186,83 @@ def send_image(filename):
     return send_from_directory(uploads_dir, filename)
 
 
-@app.route('/add_to_cart/<int:product_id>')
-def add_to_cart(product_id):
-    if 'user_id' in session:
-        user_id = session['user_id']
-        cart_item = CartItem.query.filter_by(user_id=user_id, product_id=product_id).first()
-        if cart_item:
-            cart_item.quantity += 1
-        else:
-            cart_item = CartItem(user_id=user_id, product_id=product_id)
-            db.session.add(cart_item)
-        db.session.commit()
-    return redirect(url_for('view_cart'))
 
-
-@app.route('/product/<int:product_id>/add_review', methods=['GET', 'POST'])
+@app.route('/cart')
 @login_required
-def add_review(product_id):
-    form = ReviewForm()
-    product = Product.query.get_or_404(product_id)
+def cart():
+    # Retrieve the cart items for the current user
+    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
 
-    if form.validate_on_submit():
-        rating = form.rating.data
-        comment = form.comment.data
+     # Calculate the total price
+    total_price = sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items)
 
-        review = Review(rating=rating, comment=comment, user_id=current_user.id, product_id=product_id)
-        db.session.add(review)
-        db.session.commit()
+    # Assign image URLs to each product in the cart
+    for cart_item in cart_items:
+        cart_item.product.image_url = url_for('send_image', filename=cart_item.product.image_filename)
 
-        flash('Your review has been added successfully.', 'success')
-        return redirect(url_for('product_details', product_id=product_id))
+    # Render the view_cart.html template with the cart_items
+    return render_template('view_cart.html', cart_items=cart_items, total_price=total_price)
 
-    return render_template('add_review.html', form=form, product=product)
+
+@app.route('/add_to_cart/<int:product_id>', methods=['GET', 'POST'])
+@login_required
+def add_to_cart(product_id):
+    # Check if the product is already in the cart
+    cart_item = Cart.query.filter_by(user_id=current_user.id, product_id=product_id).first()
+
+    if cart_item:
+        # Increment the quantity if the product is already in the cart
+        cart_item.quantity += 1
+    else:
+        # Add the product to the cart with a quantity of 1
+        cart_item = Cart(user_id=current_user.id, product_id=product_id, quantity=1)
+        db.session.add(cart_item)
+
+    db.session.commit()
+    flash('Product added to cart successfully!', 'success')
+    return redirect(url_for('cart'))
+
+@app.route('/remove_from_cart/<int:cart_item_id>', methods=['POST'])
+@login_required
+def remove_from_cart(cart_item_id):
+    # Get the cart item by ID
+    cart_item = Cart.query.get_or_404(cart_item_id)
+
+    # Remove the cart item from the database
+    db.session.delete(cart_item)
+    db.session.commit()
+
+    flash('Product removed from cart successfully!', 'success')
+    return redirect(url_for('cart'))
+
+
+
+@app.route('/update_cart_quantity/<int:cart_item_id>/<action>', methods=['POST'])
+@login_required
+def update_cart_quantity(cart_item_id, action):
+    # Retrieve the cart item
+    cart_item = Cart.query.get_or_404(cart_item_id)
+    
+    # Ensure the current user owns the cart item
+    if cart_item.user_id != current_user.id:
+        abort(403)  # Forbidden
+    
+    # Update the quantity based on the action
+    if action == 'increment':
+        cart_item.quantity += 1
+    elif action == 'decrement':
+        cart_item.quantity -= 1
+        if cart_item.quantity < 1:
+            # Remove the item if quantity becomes zero or negative
+            db.session.delete(cart_item)
+    
+    # Commit the changes to the database
+    db.session.commit()
+    
+    # Redirect back to the cart page
+    return redirect(url_for('cart'))
+
+
 
 # user_loader callback. This callback is used to reload the user object from
 # the user ID stored in the session
@@ -341,3 +328,46 @@ def search():
         for prod in products:
             prod.image_url = url_for('send_image', filename=prod.image_filename)
     return render_template('home.html', products=products)
+
+@app.route('/product/<int:product_id>')
+def view_product(product_id):
+    # Query the product from the database by its ID
+    product = Product.query.get_or_404(product_id)
+    product.image_url = url_for('send_image', filename=product.image_filename)
+    review_form = ReviewForm()
+
+    # Pass the product to the template for rendering
+    return render_template('view_product.html', product=product, review_form=review_form)
+
+@app.route('/dashboard/product/<int:product_id>')
+def view_product_d(product_id):
+    # Query the product from the database by its ID
+    product = Product.query.get_or_404(product_id)
+    product.image_url = url_for('send_image', filename=product.image_filename)
+
+    # Pass the product to the template for rendering
+    return render_template('view_product_d.html', product=product)
+
+@app.route('/product/<int:product_id>/add_review', methods=['POST'])
+@login_required
+def add_review(product_id):
+    form = ReviewForm(request.form)
+    product = Product.query.get_or_404(product_id)
+
+    if form.validate_on_submit():
+        rating = form.rating.data
+        comment = form.comment.data
+
+        # Create a new review object
+        review = Review(rating=rating, comment=comment, user_id=current_user.id, product_id=product_id)
+        db.session.add(review)
+        db.session.commit()
+
+        flash('Your review has been added successfully.', 'success')
+        return redirect(url_for('view_product', product_id=product_id))
+    else:
+        flash('Failed to add review. Please check your input.', 'danger')
+        # Handle invalid form submission, you might want to render the form again
+        # with validation errors, or redirect to the product page
+
+    return redirect(url_for('view_product', product_id=product_id))

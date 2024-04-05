@@ -128,7 +128,7 @@ class Product(db.Model):
 
 
     
-class CartItem(db.Model):
+class Cart(db.Model):
 
     __tablename__ = 'cart'
 
@@ -166,8 +166,10 @@ class Review(db.Model):
     def __repr__(self):
         return f'<Review {self.user}>'
 
-    def __init__(self, user_id, product_id, quantity):
+    def __init__(self, rating, comment, user_id,product_id):
+        self.rating = rating
+        self.comment = comment
         self.user_id = user_id
         self.product_id = product_id
-        self.quantity = quantity
+        
  
