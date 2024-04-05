@@ -25,9 +25,9 @@
       <div class="col-md-12">
         <h2>Reviews</h2>
         {% if product.reviews %}
-          <ul>
+          <ul class="list-unstyled">
             {% for review in product.reviews %}
-              <li>
+              <li class="mb-3">
                 <strong>User:</strong> {{ review.user.user_name }}<br>
                 <strong>Rating:</strong> {{ review.rating }}<br>
                 <strong>Comment:</strong> {{ review.comment }}

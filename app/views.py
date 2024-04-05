@@ -4,7 +4,7 @@ from flask import render_template, request, redirect, url_for, flash, session, a
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from app.models import UserProfile
-from app.models import Product, Cart, Review
+from app.models import Product, Cart, Review, Order
 from app.forms import LoginForm
 from app.forms import RegisterForm, ReviewForm
 from werkzeug.security import check_password_hash
@@ -220,7 +220,7 @@ def add_to_cart(product_id):
 
     db.session.commit()
     flash('Product added to cart successfully!', 'success')
-    return redirect(url_for('cart'))
+    return redirect(url_for('home'))
 
 @app.route('/remove_from_cart/<int:cart_item_id>', methods=['POST'])
 @login_required
@@ -371,3 +371,52 @@ def add_review(product_id):
         # with validation errors, or redirect to the product page
 
     return redirect(url_for('view_product', product_id=product_id))
+
+
+@app.route('/checkout')
+def checkout():
+    # Retrieve the cart items for the current user
+    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
+    total_price = sum(item.product.price * item.quantity for item in cart_items)
+    
+    # Render the checkout.html template with the cart items
+    return render_template('checkout.html', cart_items=cart_items, total_price=total_price)
+
+@app.route('/place_order', methods=['GET', 'POST'])
+def place_order():
+    # Retrieve the cart items for the current user
+    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
+    if cart_items:
+        # Calculate the total price
+        total_price = sum(item.product.price * item.quantity for item in cart_items)
+        
+        # Create a new order
+        order = Order(user_id=current_user.id, total_price=total_price)
+        db.session.add(order)
+        db.session.commit()
+        
+        # Clear the user's shopping cart
+        Cart.query.filter_by(user_id=current_user.id).delete()
+        db.session.commit()
+        
+        flash('Order placed successfully!', 'success')
+    else:
+        flash('Your cart is empty. Please add items before placing an order.', 'warning')
+    
+    # Redirect the user to the checkout page
+    return redirect(url_for('checkout'))
+
+@app.route('/confirm_order', methods=['GET', 'POST'])
+def confirm_order():
+    # Retrieve the cart items for the current user
+    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
+    if cart_items:
+        # Calculate the total price
+        total_price = sum(item.product.price * item.quantity for item in cart_items)
+        
+        # Pass data to the confirmation template
+        return render_template('confirm_order.html', cart_items=cart_items, total_price=total_price)
+    else:
+        flash('Your cart is empty. Please add items before confirming the order.', 'warning')
+        # Redirect the user to the checkout page
+        return redirect(url_for('checkout'))

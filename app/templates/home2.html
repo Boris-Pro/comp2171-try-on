@@ -1,7 +1,17 @@
 {% extends "base.html" %}
 
 {% block main %}
-<h1 class="page-header">Try On</h1>
+<h1 class="page-header">Store</h1>
+<!-- Search bar -->
+<form class="form-inline my-2 my-lg-0" method="GET" action="{{ url_for('search') }}">
+    <div class="input-group">
+        <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="query">
+        <div class="input-group-append">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </div>
+    </div>
+</form>
+
 <div class="container mt-5">
     <div class="row">
         {% for product in products %}
@@ -14,7 +24,11 @@
                     <p class="card-text">{{ product.description }}</p>
                     <p class="card-text">Seller: {{ product.seller.user_name }}</p>
                     <p class="card-text">Price: ${{ product.price }}</p>
-                    <a href="#" class="btn btn-primary">Add to Cart</a>
+                    <hr>
+                    <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn btn-primary ">Add to Cart </a>
+                    <a href="{{ url_for('view_product', product_id=product.id) }}" class="btn btn-primary ">View Product</a>
+                    <hr>
+                    <a href="#" class="btn btn-primary ">Set Appointment</a> 
                 </div>
             </div>
         </div>

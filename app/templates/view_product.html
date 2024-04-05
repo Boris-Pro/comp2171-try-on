@@ -19,6 +19,9 @@
         <!-- Add more actions/buttons here -->
       </div>
     </div>
+
+    <div class="row mt-4">
+      <div class="col-md-12">
         <h2>Leave a Review</h2>
         <form action="{{ url_for('add_review', product_id=product.id) }}" method="post">
           {{ review_form.hidden_tag() }}
@@ -35,24 +38,24 @@
       </div>
     </div>
 
-    <hr>
-
-    <div class="row">
+    <div class="row mt-4">
       <div class="col-md-12">
         <h2>Reviews</h2>
-        {% if product.reviews %}
-          <ul>
-            {% for review in product.reviews %}
-              <li>
-                <strong>User:</strong> {{ review.user.user_name }}<br>
-                <strong>Rating:</strong> {{ review.rating }}<br>
-                <strong>Comment:</strong> {{ review.comment }}
-              </li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p>No reviews available.</p>
-        {% endif %}
+        <div class="review-list">
+          {% if product.reviews %}
+            <ul class="list-unstyled">
+              {% for review in product.reviews %}
+                <li class="mb-3">
+                  <strong>User:</strong> {{ review.user.user_name }}<br>
+                  <strong>Rating:</strong> {{ review.rating }}<br>
+                  <strong>Comment:</strong> {{ review.comment }}
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p>No reviews available.</p>
+          {% endif %}
+        </div>
       </div>
     </div>
   </div>

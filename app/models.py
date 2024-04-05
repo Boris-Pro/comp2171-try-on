@@ -1,3 +1,5 @@
+
+from datetime import datetime, timezone
 from . import db
 from werkzeug.security import generate_password_hash
 
@@ -171,5 +173,25 @@ class Review(db.Model):
         self.comment = comment
         self.user_id = user_id
         self.product_id = product_id
+
+
+class Order(db.Model):
+    __tablename__ = 'orders'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
+    total_price = db.Column(db.Float, nullable=False)
+
+    # Define relationship with User model
+    user = db.relationship('UserProfile', backref='orders')
+
+    def get_id(self):
+        return str(self.id)
+
+    def __repr__(self):
+        return f"Order('{self.id}', '{self.created_at}')"
+    
+    def __init__(self, user_id,total_price):
         
- 
+        self.user_id = user_id
+        self.total_price = total_price
