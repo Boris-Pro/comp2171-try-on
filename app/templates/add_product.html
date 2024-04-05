@@ -1,30 +1,32 @@
 {% extends "base.html" %}
 
 {% block main %}
-<h1>Add Product</h1>
-<form method="post" enctype="multipart/form-data">
-    {{ form.csrf_token }}
-    <div>
-        {{ form.name.label }}: {{ form.name }}
-    </div>
-    <div>
-        {{ form.price.label }}: {{ form.price }}
-    </div>
-    <div>
-        {{ form.description.label }}: {{ form.description }}
-    </div>
-    <div>
-        {{ form.quantity.label }}: {{ form.quantity }}
-    </div>
-    <div>
-        {{ form.category.label }}: {{ form.category }}
-    </div>
-    <div>
-        {{ form.weight.label }}: {{ form.weight }}
-    </div>
-    <div>
-        {{ form.image.label }}: {{ form.image }}
-    </div>
-    <button type="submit">Add Product</button>
-</form>
+<div class="container">
+    <h1>Add Product</h1>
+    <form method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <div class="form-group">
+            {{ form.name.label(class="form-label") }}: {{ form.name(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.price.label(class="form-label") }}: {{ form.price(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.description.label(class="form-label") }}: {{ form.description(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.quantity.label(class="form-label") }}: {{ form.quantity(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.category.label(class="form-label") }}: {{ form.category(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.weight.label(class="form-label") }}: {{ form.weight(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.image.label(class="form-label") }}: {{ form.image(class="form-control-file") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Add Product</button>
+    </form>
+</div>
 {% endblock %}

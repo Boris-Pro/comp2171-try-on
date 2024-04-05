@@ -5,26 +5,26 @@
     <form method="post" enctype="multipart/form-data">
         {{ form.csrf_token }}
         <div>
-            {{ form.name.label }}: {{ form.name }}
+            {{ form.name.label(class="form-label") }}: {{ form.name(class="form-control") }}
         </div>
         <div>
-            {{ form.price.label }}: {{ form.price }}
+            {{ form.price.label(class="form-label") }}: {{ form.price(class="form-control") }}
         </div>
         <div>
-            {{ form.description.label }}: {{ form.description }}
+            {{ form.description.label(class="form-label") }}: {{ form.description(class="form-control") }}
         </div>
         <div>
-            {{ form.quantity.label }}: {{ form.quantity }}
+            {{ form.quantity.label(class="form-label") }}: {{ form.quantity(class="form-control") }}
         </div>
         <div>
-            {{ form.category.label }}: {{ form.category }}
+            {{ form.category.label(class="form-label") }}: {{ form.category(class="form-control") }}
         </div>
         <div>
-            {{ form.weight.label }}: {{ form.weight }}
+            {{ form.weight.label(class="form-label") }}: {{ form.weight(class="form-control") }}
         </div>
         <div>
             {{ form.image.label }}: {{ form.image }}
         </div>
-        <button type="submit">Update Product</button>
+        <button type="submit" class="btn btn-primary">Update Product</button>
     </form>
 {% endblock %}

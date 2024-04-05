@@ -11,26 +11,26 @@ from werkzeug.security import check_password_hash
 from app.helper import get_uploaded_images
 from flask import send_from_directory
 from app.forms import ProductForm
+from sqlalchemy import or_
 
 
 ###
 # Routing for your application.
 ###
 
+# @app.route('/')
+# def home():
+#     """Render website's home page."""
+#     products = Product.query.all()  # Fetch all products from the database
+#     for prod in products:
+#         prod.image_url = url_for('send_image', filename=prod.image_filename)
+#     return render_template('home.html', products=products)
 
-@app.route('/')
-def home():
-    """Render website's home page."""
-    products = Product.query.all()  # Fetch all products from the database
-    for prod in products:
-        prod.image_url = url_for('send_image', filename=prod.image_filename)
-    return render_template('home.html', products=products)
 
-
-@app.route('/about/')
-def about():
-    """Render the website's about page."""
-    return render_template('about.html', name="Mary Jane")
+# @app.route('/about/')
+# def about():
+#     """Render the website's about page."""
+#     return render_template('about.html', name="Mary Jane")
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -60,16 +60,34 @@ def register():
         flash_errors(myform)
     return render_template('register.html', form=myform)
 
+# @app.route('/dashboard')
+# @login_required
+# def dashboard():
+#     if current_user.user_type == 'seller':
+#         products = Product.query.filter_by(seller_id=current_user.id).all()
+#         # products = Product.query.all()  # Fetch all products from the database
+#         for prod in products:
+#             prod.image_url = url_for('send_image', filename=prod.image_filename)
+#             return render_template('dashboard.html', products=products)
+#     else:
+#         flash('Access denied! You are not authorized to view this page.', 'danger')
+#         return redirect(url_for('home'))
+    
+
 @app.route('/dashboard')
 @login_required
 def dashboard():
     if current_user.user_type == 'seller':
         products = Product.query.filter_by(seller_id=current_user.id).all()
+        # products = Product.query.all()  # Fetch all products from the database
+
+        for prod in products:
+            prod.image_url = url_for('send_image', filename=prod.image_filename)
+
         return render_template('dashboard.html', products=products)
     else:
         flash('Access denied! You are not authorized to view this page.', 'danger')
         return redirect(url_for('home'))
-    
 
 # @app.route('/product/add', methods=['GET', 'POST'])
 # @login_required
@@ -96,29 +114,60 @@ def dashboard():
 #         flash('Access denied! You are not authorized to add products.', 'danger')
 #         return redirect(url_for('dashboard'))
 
-app.route('/product/edit/<int:product_id>', methods=['GET', 'POST'])
+# app.route('/dashboard/edit_product/<int:product_id>', methods=['GET', 'POST'])
+# @login_required
+# def edit_product(product_id):
+#     product = Product.query.get_or_404(product_id)
+#     if current_user.user_type == 'seller' and product.seller_id == current_user.id:
+#         form = ProductForm(obj=product)
+#         if form.validate_on_submit():
+#             product.name = form.name.data
+#             product.price = form.price.data
+#             product.description = form.description.data
+#             product.quantity = form.quantity.data
+#             product.category = form.category.data
+#             product.weight = form.weight.data
+#             product.image_filename = form.image_filename.data
+#             db.session.commit()
+#             flash('Product updated successfully!', 'success')
+#             return redirect(url_for('dashboard'))
+#         return render_template('edit_product.html', form=form, product=product)
+#     else:
+#         flash('Access denied! You are not authorized to edit this product.', 'danger')
+#         return redirect(url_for('dashboard'))
+    
+@app.route('/dashboard/edit_product/<int:product_id>', methods=['GET', 'POST'])
 @login_required
 def edit_product(product_id):
     product = Product.query.get_or_404(product_id)
     if current_user.user_type == 'seller' and product.seller_id == current_user.id:
         form = ProductForm(obj=product)
         if form.validate_on_submit():
+            # Update product details from form data
             product.name = form.name.data
             product.price = form.price.data
             product.description = form.description.data
             product.quantity = form.quantity.data
             product.category = form.category.data
             product.weight = form.weight.data
-            product.image_filename = form.image_filename.data
+            image = form.image.data
+            image_filename = secure_filename(form.image.data.filename)
+            image.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+            product.image_filename = image_filename
+            
+            # Commit changes to the database
             db.session.commit()
+            
+            # Flash message and redirect to dashboard
             flash('Product updated successfully!', 'success')
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('dashboard'))  # Corrected redirect
         return render_template('edit_product.html', form=form, product=product)
     else:
         flash('Access denied! You are not authorized to edit this product.', 'danger')
         return redirect(url_for('dashboard'))
-    
-@app.route('/product/delete/<int:product_id>', methods=['POST'])
+
+
+@app.route('/dashboard/delete/<int:product_id>', methods=['POST', 'GET'])
 @login_required
 def delete_product(product_id):
     product = Product.query.get_or_404(product_id)
@@ -276,3 +325,19 @@ def add_header(response):
 def page_not_found(error):
     """Custom 404 page."""
     return render_template('404.html'), 404
+
+
+@app.route('/search')
+def search():
+    query = request.args.get('query')
+    if query:
+        # Perform search logic by filtering products whose names contain the query
+        products = Product.query.filter(Product.name.ilike(f"%{query}%")).all()
+        for prod in products:
+            prod.image_url = url_for('send_image', filename=prod.image_filename)
+    else:
+        # If no query is provided, return all products
+        products = Product.query.all()
+        for prod in products:
+            prod.image_url = url_for('send_image', filename=prod.image_filename)
+    return render_template('home.html', products=products)

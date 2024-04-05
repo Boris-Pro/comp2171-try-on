@@ -19,7 +19,10 @@ class UserProfile(db.Model):
 
     # User Can Have Many reviews 
     review = db.relationship('Review', backref='user')
-    products = db.relationship('Product', backref='user')
+    # products = db.relationship('Product', backref='seller', foreign_keys='Product.seller_id')
+    # products = db.relationship('Product', backref='user')
+    # products = db.relationship('Product', backref='seller')
+    products = db.relationship('Product', backref='seller')
 
     def is_authenticated(self):
         return True
@@ -50,6 +53,46 @@ class UserProfile(db.Model):
 
 
         
+# class Product(db.Model):
+#     __tablename__ = 'products'
+
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(100), nullable=False)
+#     price = db.Column(db.Float, nullable=False)
+#     description = db.Column(db.Text)
+#     quantity = db.Column(db.Integer, nullable=False, default=0)
+#     category = db.Column(db.String(100))
+#     weight = db.Column(db.Float)
+#     image_filename = db.Column(db.String(255))
+#     reviews = db.relationship('Review', backref='product')
+
+#     # Foreign Key To Link Users (refer to primary key of the user)
+#     # seller_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+#     # Define a relationship with the UserProfile model to access the seller's username
+#     # seller_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+#     # # seller = db.relationship('UserProfile', backref='products_selling', foreign_keys='Product.seller_id')
+#     # seller = db.relationship('UserProfile', backref='products_selling')
+#     seller = db.relationship('UserProfile', backref='seller_products')
+
+
+#     def get_id(self):
+#         return str(self.id)
+
+#     def __repr__(self):
+#         return f'<Product {self.name}>'
+    
+#     def __init__(self, name, price, description, quantity, category, weight,image_filename, seller_id):
+#         self.name = name
+#         self.price = price
+#         self.description = description
+#         self.quantity = quantity
+#         self.category = category
+#         self.weight = weight
+#         self.image_filename = image_filename
+#         self.seller_id = seller_id
+#         # self.seller_name = seller_name
+        
+
 class Product(db.Model):
     __tablename__ = 'products'
 
@@ -66,14 +109,13 @@ class Product(db.Model):
     # Foreign Key To Link Users (refer to primary key of the user)
     seller_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-
     def get_id(self):
         return str(self.id)
 
     def __repr__(self):
         return f'<Product {self.name}>'
     
-    def __init__(self, name, price, description, quantity, category, weight,image_filename, seller_id):
+    def __init__(self, name, price, description, quantity, category, weight, image_filename, seller_id):
         self.name = name
         self.price = price
         self.description = description
@@ -82,6 +124,7 @@ class Product(db.Model):
         self.weight = weight
         self.image_filename = image_filename
         self.seller_id = seller_id
+
 
 
     
