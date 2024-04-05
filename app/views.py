@@ -373,7 +373,7 @@ def add_review(product_id):
     return redirect(url_for('view_product', product_id=product_id))
 
 
-@app.route('/checkout')
+@app.route('/checkout',  methods=['GET', 'POST'])
 def checkout():
     # Retrieve the cart items for the current user
     cart_items = Cart.query.filter_by(user_id=current_user.id).all()
@@ -382,11 +382,44 @@ def checkout():
     # Render the checkout.html template with the cart items
     return render_template('checkout.html', cart_items=cart_items, total_price=total_price)
 
+# @app.route('/place_order', methods=['GET', 'POST'])
+# def place_order():
+#     # Retrieve the cart items for the current user
+#     cart_items = Cart.query.filter_by(user_id=current_user.id).all()
+#     if cart_items:
+#         # Calculate the total price
+#         total_price = sum(item.product.price * item.quantity for item in cart_items)
+        
+#         # Create a new order
+#         order = Order(user_id=current_user.id, total_price=total_price)
+#         db.session.add(order)
+#         db.session.commit()
+        
+#         # Clear the user's shopping cart
+#         Cart.query.filter_by(user_id=current_user.id).delete()
+#         db.session.commit()
+        
+#         flash('Order placed successfully!', 'success')
+#     else:
+#         flash('Your cart is empty. Please add items before placing an order.', 'warning')
+    
+#     # Redirect the user to the checkout page
+#     return redirect(url_for('checkout'))
+
 @app.route('/place_order', methods=['GET', 'POST'])
 def place_order():
     # Retrieve the cart items for the current user
     cart_items = Cart.query.filter_by(user_id=current_user.id).all()
-    if cart_items:
+    
+    if request.method == 'POST':
+        # Retrieve PayPal email from the form
+        paypal_email = request.form.get('paypal_email')
+
+        # Check if the PayPal email is provided
+        if not paypal_email:
+            flash('Please provide a PayPal email.', 'error')
+            return redirect(url_for('checkout'))
+
         # Calculate the total price
         total_price = sum(item.product.price * item.quantity for item in cart_items)
         
@@ -400,11 +433,9 @@ def place_order():
         db.session.commit()
         
         flash('Order placed successfully!', 'success')
-    else:
-        flash('Your cart is empty. Please add items before placing an order.', 'warning')
-    
-    # Redirect the user to the checkout page
-    return redirect(url_for('checkout'))
+        return redirect(url_for('checkout'))
+
+    return render_template('place_order.html', cart_items=cart_items)
 
 @app.route('/confirm_order', methods=['GET', 'POST'])
 def confirm_order():

@@ -30,9 +30,17 @@
             <h4>Grand Total: ${{ total_price }}</h4> <!-- Display the grand total -->
         </div>
     </div>
-    <div class="text-center">
-        <a href="{{ url_for('place_order') }}" class="btn btn-primary">Confirm Order</a>
-    </div>
+    
+    <!-- Payment Form -->
+    <h2>Payment</h2>
+    <form method="post" action="{{ url_for('place_order') }}">
+        <div class="form-group">
+            <label for="paypal_email">PayPal Email:</label>
+            <input type="email" class="form-control" id="paypal_email" name="paypal_email" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Payment</button>
+    </form>
+    
     {% else %}
     <p>Your cart is empty.</p>
     {% endif %}
