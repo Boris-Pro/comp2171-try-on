@@ -195,3 +195,24 @@ class Order(db.Model):
         
         self.user_id = user_id
         self.total_price = total_price
+
+class Appointment(db.Model):
+    __tablename__ = 'appointments'
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, nullable=False)
+    time = db.Column(db.String(20), nullable=False)
+    purpose = db.Column(db.String(200), nullable=False)
+    items_to_view = db.Column(db.String(200))
+    notes = db.Column(db.Text)
+
+    # Add a foreign key to link with the Product model
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    
+    # Create a relationship with the Product model
+    product = db.relationship('Product', backref='appointments')
+
+    def get_id(self):
+        return str(self.id)
+
+    def __repr__(self):
+        return f'<Appointment {self.id}>'

@@ -3,13 +3,13 @@
 {% block main %}
 
 {% include "dashboard_header.html" %}
-<h1>Dashboard</h1>
+<h1>Dashboard2</h1>
     <h2>Products</h2>
     <div class="container mt-5">
         <div class="row">
             {% for product in products %}
-            <div class="col-md-3 mb-4">
-                <div class="card h-100">
+            <div class="col-md-3 mb-4 product-card">
+                <div class="">
                     <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.name }}">
                     <!-- <img src="{{ product.image_filename }}" class="card-img-top" alt="Product Image"> -->
                     <div class="card-body">

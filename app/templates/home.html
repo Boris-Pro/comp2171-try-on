@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block main %}
+
 <h1 class="page-header">Store</h1>
 <!-- Search bar -->
 <form class="form-inline my-2 my-lg-0" method="GET" action="{{ url_for('search') }}">
@@ -12,29 +13,21 @@
     </div>
 </form>
 
-<div class="container mt-5">
-    <div class="row">
+<div class="product-grid">
         {% for product in products %}
-        <div class="col-md-3 mb-4">
-            <div class="card h-100">
-                <img src="{{ product.image_url }}" class="card-img-top img-fluid" alt="{{ product.name }}">
-                <!-- <img src="{{ product.image_filename }}" class="card-img-top" alt="Product Image"> -->
-                <div class="card-body">
-                    <h5 class="card-title">{{ product.name }}</h5>
-                    <p class="card-text">{{ product.description }}</p>
-                    <p class="card-text">Seller: {{ product.seller.user_name }}</p>
-                    <p class="card-text">Price: ${{ product.price }}</p>
-                    <hr>
+            <div class="product-card">
+                <a href="{{ url_for('view_product', product_id=product.id) }}">
+                    <img src="{{ product.image_url }}" class="product-img" alt="{{ product.name }}">
+                </a>
+                <div>
+                    <h5 class="product-title">{{ product.name }}</h5>
+                    <p class="product-description">{{ product.description }}</p>
+                    <p class="product-price">${{ product.price }}</p>
+                </div>
+                <div class="btn-section">
                     <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn btn-primary ">Add to Cart </a>
-                    <a href="{{ url_for('view_product', product_id=product.id) }}" class="btn btn-primary ">View Product</a>
-                    <hr>
-                    <a href="#" class="btn btn-primary ">Set Appointment</a> 
                 </div>
             </div>
-        </div>
         {% endfor %}
-    </div>
 </div>
-
-<p class="lead">This Flask app demonstrates basic authentication.</p>
 {% endblock %}

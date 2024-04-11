@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, FloatField, TextAreaField, IntegerField, SelectField, SubmitField
+from wtforms import StringField, PasswordField, FloatField, TextAreaField, IntegerField, SelectField, SubmitField,DateField, TimeField
 from wtforms.validators import InputRequired, DataRequired, NumberRange
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
@@ -30,3 +30,14 @@ class ReviewForm(FlaskForm):
     rating = IntegerField('Rating', validators=[DataRequired(), NumberRange(min=1, max=5)])
     comment = TextAreaField('Comment')
     submit = SubmitField('Submit Review')
+
+
+
+class AppointmentForm(FlaskForm):
+    date = DateField('Date', validators=[DataRequired()])
+    time = TimeField('Time', validators=[DataRequired()])
+    #location = StringField('Location', validators=[DataRequired()])
+    purpose = StringField('Purpose', validators=[DataRequired()])
+    items_to_view = StringField('Items to View')
+    notes = TextAreaField('Notes')
+    product_id = SelectField('Product', coerce=int)

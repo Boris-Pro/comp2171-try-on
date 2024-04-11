@@ -2,12 +2,12 @@
 
 {% block main %}
 <div class="container">
-    <h1>{{ product.name }}</h1>
     <div class="row">
       <div class="col-md-4">
         <img src="{{ product.image_url }}" class="img-fluid" alt="{{ product.name }}">
       </div>
       <div class="col-md-8">
+        <h1>{{ product.name }}</h1>
         <p><strong>Price:</strong> ${{ product.price }}</p>
         <p><strong>Description:</strong> {{ product.description }}</p>
         <p><strong>Category:</strong> {{ product.category }}</p>
@@ -16,6 +16,7 @@
         <p><strong>Seller:</strong> {{ product.seller.user_name }}</p>
         <hr>
         <a href="#" class="btn btn-primary">Add to Cart</a>
+        <a href="{{ url_for('add_appointment', product_id=product.id) }}" class="btn btn-primary">Set Appointment</a>
         <!-- Add more actions/buttons here -->
       </div>
     </div>

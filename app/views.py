@@ -4,9 +4,9 @@ from flask import render_template, request, redirect, url_for, flash, session, a
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from app.models import UserProfile
-from app.models import Product, Cart, Review, Order
+from app.models import Product, Cart, Review, Order,Appointment
 from app.forms import LoginForm
-from app.forms import RegisterForm, ReviewForm
+from app.forms import RegisterForm, ReviewForm,AppointmentForm
 from werkzeug.security import check_password_hash
 from app.helper import get_uploaded_images
 from flask import send_from_directory
@@ -451,3 +451,25 @@ def confirm_order():
         flash('Your cart is empty. Please add items before confirming the order.', 'warning')
         # Redirect the user to the checkout page
         return redirect(url_for('checkout'))
+
+
+@app.route('/add_appointment/<int:product_id>', methods=['GET', 'POST'])
+def add_appointment(product_id):
+    form = AppointmentForm()
+    product = Product.query.get_or_404(product_id)
+
+    if form.validate_on_submit():
+        appointment = Appointment(
+            date=form.date.data,
+            time=form.time.data,
+            purpose=form.purpose.data,
+            items_to_view=form.items_to_view.data,
+            notes=form.notes.data,
+            product_id=product_id  # Set the product_id from the URL parameter
+        )
+        db.session.add(appointment)
+        db.session.commit()
+        flash("Appointment added successfully.")
+        return redirect(url_for('dashboard'))  # Or redirect to an appropriate page
+
+    return render_template('add_appointment.html', form=form, product=product)
