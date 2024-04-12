@@ -3,7 +3,7 @@
 {% block main %}
 <div class="container">
     <h1>Schedule Appointment</h1>
-    <form method="POST" action="{{ url_for('add_appointment') }}">
+    <form method="POST" action="{{ url_for('add_appointment', product_id=product.id) }}">
         {{ form.csrf_token }}
         <div class="form-group">
             {{ form.date.label }}

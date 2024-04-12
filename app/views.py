@@ -279,11 +279,24 @@ def add_appointment(product_id):
             purpose=form.purpose.data,
             items_to_view=form.items_to_view.data,
             notes=form.notes.data,
-            # product_id=product_id  # Set the product_id from the URL parameter
+            user_id=current_user.id,
+            product_id=product_id  # Set the product_id from the URL parameter
         )
         db.session.add(appointment)
         db.session.commit()
         flash("Appointment added successfully.")
-        return redirect(url_for('dashboard'))  # Or redirect to an appropriate page
+        return redirect(url_for('home'))  # Or redirect to an appropriate page
 
     return render_template('add_appointment.html', form=form, product=product)
+
+@app.route('/appointments')
+def view_appointments():
+    appointments = Appointment.query.filter_by(user_id=current_user.id).all()
+    return render_template('view_appointments.html', appointments=appointments)
+
+@app.route('/view-appointments')
+def view_appointments_seller():
+    # Replace current_user.id with the method to get the current seller's ID
+    seller_id = current_user.id
+    appointments = Appointment.query.join(Product).filter(Product.seller_id == seller_id).all()
+    return render_template('view_appointments_seller.html', appointments=appointments)

@@ -205,6 +205,8 @@ class Appointment(db.Model):
     items_to_view = db.Column(db.String(200))
     notes = db.Column(db.Text)
 
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
     # Add a foreign key to link with the Product model
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
     

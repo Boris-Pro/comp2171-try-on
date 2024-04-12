@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+
+    <h1>Appointments</h1>
+    <ul>
+        {% for appointment in appointments %}
+            <li>
+                <strong>Date:</strong> {{ appointment.date }}<br>
+                <strong>Time:</strong> {{ appointment.time }}<br>
+                <strong>Purpose:</strong> {{ appointment.purpose }}<br>
+                {% if appointment.items_to_view %}
+                    <strong>Items to View:</strong> {{ appointment.items_to_view }}<br>
+                {% endif %}
+                {% if appointment.notes %}
+                    <strong>Notes:</strong> {{ appointment.notes }}<br>
+                {% endif %}
+                {% if appointment.product %}
+                    <strong>Product:</strong> {{ appointment.product.name }}<br>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
