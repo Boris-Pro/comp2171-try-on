@@ -40,4 +40,4 @@ class AppointmentForm(FlaskForm):
     purpose = StringField('Purpose', validators=[DataRequired()])
     items_to_view = StringField('Items to View')
     notes = TextAreaField('Notes')
-    product_id = SelectField('Product', coerce=int)
+    # product_id = SelectField('Product', coerce=int)
