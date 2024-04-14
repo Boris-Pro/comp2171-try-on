@@ -80,3 +80,41 @@ body {
     flex-wrap: wrap;
     gap:32px;
 }
+
+
+.appointments{
+    width: 100%;
+    list-style: none;
+}
+table.appointments {
+    width: 100%;
+    border-collapse: collapse; 
+    margin-top: 20px; 
+    background-color: #f9f9f9; 
+}
+
+table.appointments th {
+    background-color: rgb(57, 57, 175);
+    color: white; 
+    text-align: left;
+    padding: 12px 15px; 
+    border-bottom: 1px solid #ddd; 
+
+}
+table.appointments td {
+    padding: 8px 15px; 
+    border-bottom: 1px solid #ddd; 
+}
+
+table.appointments tr:nth-child(odd) {
+    background-color: #ffffff; 
+}
+
+table.appointments tr:nth-child(even) {
+    background-color: #f2f2f2; 
+}
+
+
+table.appointments tr:hover {
+    background-color: #ddd; 
+}

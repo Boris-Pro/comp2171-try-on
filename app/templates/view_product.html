@@ -15,9 +15,8 @@
         <p><strong>Weight:</strong> {{ product.weight }} lbs</p>
         <p><strong>Seller:</strong> {{ product.seller.user_name }}</p>
         <hr>
-        <a href="#" class="btn btn-primary">Add to Cart</a>
+        <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn btn-primary">Add to Cart</a>
         <a href="{{ url_for('add_appointment', product_id=product.id) }}" class="btn btn-primary">Set Appointment</a>
-        <!-- Add more actions/buttons here -->
       </div>
     </div>
 

@@ -5,12 +5,10 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from app.models import UserProfile
 from app.models import Product, Cart, Review, Order,Appointment
-from app.forms import LoginForm
-from app.forms import RegisterForm, ReviewForm,AppointmentForm
+from app.forms import RegisterForm, ReviewForm,AppointmentForm, LoginForm, ProductForm
 from werkzeug.security import check_password_hash
 from app.helper import get_uploaded_images
 from flask import send_from_directory
-from app.forms import ProductForm
 from sqlalchemy import or_
 
 
@@ -47,9 +45,15 @@ def send_image(filename):
 
 
 
+
 @app.route('/add_to_cart/<int:product_id>', methods=['GET', 'POST'])
 @login_required
 def add_to_cart(product_id):
+    # Check if the user is a buyer
+    if current_user.user_type != 'buyer':
+        flash('Only buyers are allowed to add products to their cart.', 'danger')
+        return redirect(url_for('home'))  
+
     # Check if the product is already in the cart
     cart_item = Cart.query.filter_by(user_id=current_user.id, product_id=product_id).first()
 
@@ -64,6 +68,7 @@ def add_to_cart(product_id):
     db.session.commit()
     flash('Product added to cart successfully!', 'success')
     return redirect(url_for('home'))
+
 
 @app.route('/remove_from_cart/<int:cart_item_id>', methods=['POST'])
 @login_required
@@ -247,7 +252,7 @@ def place_order():
         db.session.commit()
         
         flash('Order placed successfully!', 'success')
-        return redirect(url_for('checkout'))
+        return redirect(url_for('cart'))
 
     return render_template('place_order.html', cart_items=cart_items)
 
@@ -276,15 +281,13 @@ def add_appointment(product_id):
         appointment = Appointment(
             date=form.date.data,
             time=form.time.data,
-            purpose=form.purpose.data,
-            items_to_view=form.items_to_view.data,
             notes=form.notes.data,
             user_id=current_user.id,
             product_id=product_id  # Set the product_id from the URL parameter
         )
         db.session.add(appointment)
         db.session.commit()
-        flash("Appointment added successfully.")
+        flash('Appointment added successfully.', 'success')
         return redirect(url_for('home'))  # Or redirect to an appropriate page
 
     return render_template('add_appointment.html', form=form, product=product)
@@ -300,3 +303,19 @@ def view_appointments_seller():
     seller_id = current_user.id
     appointments = Appointment.query.join(Product).filter(Product.seller_id == seller_id).all()
     return render_template('view_appointments_seller.html', appointments=appointments)
+
+@app.route('/remove_appointment/<int:appointment_id>', methods=['POST'])
+def remove_appointment(appointment_id):
+    appointment = Appointment.query.get_or_404(appointment_id)
+    db.session.delete(appointment)
+    db.session.commit()
+    flash('Appointment successfully removed.', 'success')
+    return redirect(url_for('view_appointments'))
+
+@app.route('/dashboard/appointments/remove_appointment/<int:appointment_id>', methods=['POST'])
+def remove_appointment_seller(appointment_id):
+    appointment = Appointment.query.get_or_404(appointment_id)
+    db.session.delete(appointment)
+    db.session.commit()
+    flash('Appointment successfully removed.', 'success')
+    return redirect(url_for('view_appointments_seller'))

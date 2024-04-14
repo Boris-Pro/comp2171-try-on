@@ -42,7 +42,7 @@ class RegisterController(View):
 
         # If the form is not valid, handle the form errors
         if request.method == 'POST':
-            flash_errors(myform)  # Assumes flash_errors is a function that handles form errors
+            flash_errors(myform)  
 
         return render_template('register.html', form=myform)
 
@@ -138,7 +138,7 @@ class LoginController(View):
             if user and check_password_hash(user.password, password):
                 login_user(user)
                 flash('Logged in successfully.', 'success')
-                return redirect(url_for('home'))  # Redirect to home or another specific route
+                return redirect(url_for('home')) 
             else:
                 flash('Invalid username or password.', 'danger')
 
@@ -187,10 +187,10 @@ class AddProductController(View):
             db.session.commit()
 
             flash('Product added successfully!', 'success')
-            return redirect(url_for('dashboard'))  # Redirect to the dashboard or product detail page
+            return redirect(url_for('dashboard')) 
 
         if request.method == 'POST':
-            flash_errors(form)  # Assumes flash_errors is a function that handles form errors
+            flash_errors(form) 
         
         return render_template('add_product.html', form=form)
 

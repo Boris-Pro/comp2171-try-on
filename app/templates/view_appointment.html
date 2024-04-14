@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block main %}
+    <div class="container">
+        <h1 class="mt-5">Appointments</h1>
+        <ul class="list-group mt-3">
+            {% for appointment in appointments %}
+                <li class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">Date: {{ appointment.date }}</h5>
+                        <small>Time: {{ appointment.time }}</small>
+                    </div>
+                    {% if appointment.notes %}
+                        <p class="mb-1"><strong>Notes:</strong> {{ appointment.notes }}</p>
+                    {% endif %}
+                    {% if appointment.product %}
+                        <p class="mb-1"><strong>Product Viewing:</strong> {{ appointment.product.name }}</p>
+                    {% endif %}
+                    <form action="{{ url_for('remove_appointment', appointment_id=appointment.id) }}" method="post">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

@@ -201,8 +201,6 @@ class Appointment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
     time = db.Column(db.String(20), nullable=False)
-    purpose = db.Column(db.String(200), nullable=False)
-    items_to_view = db.Column(db.String(200))
     notes = db.Column(db.Text)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))

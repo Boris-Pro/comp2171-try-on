@@ -1,25 +1,32 @@
 {% extends "base.html" %}
 
 {% block main %}
-
-
     <h1>Appointments</h1>
-    <ul>
-        {% for appointment in appointments %}
-            <li>
-                <strong>Date:</strong> {{ appointment.date }}<br>
-                <strong>Time:</strong> {{ appointment.time }}<br>
-                <strong>Purpose:</strong> {{ appointment.purpose }}<br>
-                {% if appointment.items_to_view %}
-                    <strong>Items to View:</strong> {{ appointment.items_to_view }}<br>
-                {% endif %}
-                {% if appointment.notes %}
-                    <strong>Notes:</strong> {{ appointment.notes }}<br>
-                {% endif %}
-                {% if appointment.product %}
-                    <strong>Product:</strong> {{ appointment.product.name }}<br>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
+    <table class="appointments">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Notes</th>
+                <th>Product</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+            <tr class="appointment">
+                <td>{{ appointment.date }}</td>
+                <td>{{ appointment.time }}</td>
+                <td>{{ appointment.notes | default('N/A') }}</td>
+                <td>{{ appointment.product.name if appointment.product else 'N/A' }}</td>
+                <td>
+                    <form action="{{ url_for('remove_appointment', appointment_id=appointment.id) }}" method="post">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

@@ -37,7 +37,5 @@ class AppointmentForm(FlaskForm):
     date = DateField('Date', validators=[DataRequired()])
     time = TimeField('Time', validators=[DataRequired()])
     #location = StringField('Location', validators=[DataRequired()])
-    purpose = StringField('Purpose', validators=[DataRequired()])
-    items_to_view = StringField('Items to View')
     notes = TextAreaField('Notes')
     # product_id = SelectField('Product', coerce=int)
