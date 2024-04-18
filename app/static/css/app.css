@@ -40,6 +40,7 @@ body {
 .product-card{
     height:70vh;
     flex: 0 0 25%; 
+    /* flex-basis: calc(25% - 16px); */
     max-width: 25%; 
     padding:24px;
     /* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); */
@@ -53,7 +54,8 @@ body {
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    object-fit: cover;
+    /* object-fit: cover; */
+    object-fit: contain;
     object-position: top; 
 }
 .btn-section{
@@ -73,12 +75,18 @@ body {
 }
 .product-description{
     font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Number of lines to show */
+    -webkit-box-orient: vertical;
 }
 .product-grid{
     margin-top: 64px;
     display: flex;
     flex-wrap: wrap;
     gap:32px;
+    justify-content: space-between;
 }
 
 
