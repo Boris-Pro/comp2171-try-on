@@ -7,6 +7,7 @@
             <tr class="table-primary">
                 <th>Date</th>
                 <th>Time</th>
+                <th>Customer</th>
                 <th>Product Viewing</th>
                 <th>Notes</th>
                 <th>Actions</th> 
@@ -17,6 +18,7 @@
             <tr>
                 <td>{{ appointment.date }}</td>
                 <td>{{ appointment.time }}</td>
+                <td>{{ appointment.user.user_name}}</td>
                 <td>{{ appointment.product.name }}</td>
                 <td>{{ appointment.notes }}</td>
                 <td>
